@@ -49,6 +49,50 @@ class CreditCardDetails:
     ccv: Optional[str]
 ```
 
+## Comparison key
+
+Each role defines a `comparison_key`. This must exist as an attribute on objects that want to be protected by that role. This tells FancyAuth who "owns" that type, and does the role have access to it or not.
+
+For example, `UserMatches` above sets its `comparison_key` as follows:
+
+```python
+class UserMatches(BaseRole):
+    comparison_key = "fancy_auth_user_owner_id"
+```
+
+All types that use `UserMatches` must provide `fancy_auth_user_owner_id` as a `strawberry.Private[...]` attribute:
+
+```python
+@strawberry.type
+class User:
+    # The ID of the user
+    fancy_auth_user_owner_id: strawberry.Private[str]
+
+    @fancy_auth(UserMatches())
+    @strawberry.field
+    def password(self, info: strawberry.Info) -> Optional[str]: ...
+
+
+@fancy_auth(UserMatches())
+@strawberry.type
+class UserAddress:
+    # The ID of the user whose address this is
+    fancy_auth_user_owner_id: strawberry.Private[str]
+    address_line_1: str
+    zip_code: str
+    country: str
+
+
+@strawberry.type
+class Event:
+    # The ID of the user who created this event
+    fancy_auth_user_owner_id: strawberry.Private[str]
+
+    @fancy_auth(UserMatches())
+    @strawberry.field
+    def invitations(self, info: strawberry.Info) -> list[EventInvites]: ...
+```
+
 ## Policy vs Role
 
 - A "Role" represents a single permission the user may have (e.g. `UserIsDog`).
