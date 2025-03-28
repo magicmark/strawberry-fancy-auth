@@ -1,0 +1,17 @@
+[project]
+name = "fancy-auth"
+version = "0.1.0"
+description = ""
+requires-python = ">=3.10"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+dataclasses = {version = "*", markers = "python_version < '3.7'"}
+exceptiongroup = "^1.2.2"
+strawberry-graphql = {version = ">=0.244.0,<0.263.0", extras = ["debug-server"], platform = "linux"}
+pytest = {version = "*", markers = "python_version >= '3.7'"}
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
